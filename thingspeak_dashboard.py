@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from PIL import Image
 import requests
 from datetime import timedelta
-from PIL import Image
 from streamlit_option_menu import option_menu
 
 # Use Streamlit secrets for ThingSpeak credentials
@@ -53,7 +52,7 @@ def create_plot(df, y_col, ma_col, title, y_label):
     fig.add_trace(go.Scatter(x=df['created_at'], y=df[y_col], mode='lines+markers', name=y_label))
     
     # Add moving average
-    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name=f'Moving Avg', line=dict(color='red')))
+    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name='Moving Avg', line=dict(color='red')))
     
     fig.update_layout(
         title=title,
@@ -113,11 +112,6 @@ def main():
         # Filter data based on selected date range
         mask = (df['created_at'].dt.date >= start_date) & (df['created_at'].dt.date <= end_date)
         filtered_df = df.loc[mask]
-
-        # Display summary statistics
-        st.sidebar.subheader("Summary Statistics")
-        st.sidebar.write(f"Average Temperature: {filtered_df['field1'].mean():.2f} °C")
-        st.sidebar.write(f"Average Humidity: {filtered_df['field2'].mean():.2f} %")
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
