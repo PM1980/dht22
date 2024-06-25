@@ -75,6 +75,7 @@ def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
     st.title("ThingSpeak Temperature and Humidity Dashboard (UTC-3)")
     img = Image.open("Logo.png")
+    st.image(img)
 
     df = fetch_data()
 
