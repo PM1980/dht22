@@ -108,7 +108,8 @@ def main():
         # Snowflake connection and querying would go here
 
     elif selected == "Contact Us":
-        st.subheader(f"**You Have selected {selected}**")
+        st.subheader(f"**Informações para contato e redes sociais**")
+        st.markdown("For inquiries, please contact us [here](mailto:info@example.com).")
         # Contact form or information would go here
 
 if __name__ == "__main__":
