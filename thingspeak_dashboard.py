@@ -76,7 +76,7 @@ def main():
     # Sidebar setup
     with st.sidebar:
         # Sidebar logo
-        st.sidebar.image("logo.png", use_column_width=True)
+        st.sidebar.image("Logo e-Civil.png", use_column_width=True)
         
         # Sidebar instructions
         st.sidebar.markdown("""
