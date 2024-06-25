@@ -104,14 +104,12 @@ def main():
         # Display recent data in a styled table without index
         st.subheader("Dados Recentes (UTC-3)")
         recent_data_table = df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True)
-        st.write(
-            recent_data_table.style
-                .set_table_styles([{
-                    'selector': 'thead th',  # style header
-                    'props': [('background-color', 'lightblue'), ('color', 'black'), ('font-weight', 'bold')]
-                }])
-                .hide_index()  # hide index column
-        )
+        st.table(recent_data_table.style.set_properties(**{
+            'text-align': 'center',
+            'background-color': 'lightblue',
+            'color': 'black',
+            'font-weight': 'bold'
+        }))
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
@@ -132,24 +130,20 @@ def main():
 
         # Display styled extreme temperatures tables without index
         st.subheader("Temperaturas Máximas (Últimos 10 dias)")
-        st.write(
-            max_temps_table.style
-                .set_table_styles([{
-                    'selector': 'thead th',  # style header
-                    'props': [('background-color', 'lightgreen'), ('color', 'black'), ('font-weight', 'bold')]
-                }])
-                .hide_index()  # hide index column
-        )
+        st.table(max_temps_table.style.set_properties(**{
+            'text-align': 'center',
+            'background-color': 'lightgreen',
+            'color': 'black',
+            'font-weight': 'bold'
+        }))
 
         st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
-        st.write(
-            min_temps_table.style
-                .set_table_styles([{
-                    'selector': 'thead th',  # style header
-                    'props': [('background-color', 'lightcoral'), ('color', 'black'), ('font-weight', 'bold')]
-                }])
-                .hide_index()  # hide index column
-        )
+        st.table(min_temps_table.style.set_properties(**{
+            'text-align': 'center',
+            'background-color': 'lightcoral',
+            'color': 'black',
+            'font-weight': 'bold'
+        }))
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
