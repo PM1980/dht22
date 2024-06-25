@@ -29,11 +29,6 @@ def fetch_data():
         # Sort the dataframe by date
         df = df.sort_values('created_at')
         
-        # Calculate moving averages
-        window_size = 72
-        df['temp_ma'] = df['field1'].rolling(window=window_size, min_periods=1).mean()
-        df['humidity_ma'] = df['field2'].rolling(window=window_size, min_periods=1).mean()
-        
         return df
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching data from ThingSpeak: {e}")
@@ -45,7 +40,7 @@ def fetch_data():
         st.error(f"An unexpected error occurred: {e}")
         return pd.DataFrame()
 
-def create_plot(df, y_col, ma_col, title, y_label, color):
+def create_plot(df, y_col, title, y_label, color):
     fig = go.Figure()
     
     # Add main data
@@ -55,15 +50,6 @@ def create_plot(df, y_col, ma_col, title, y_label, color):
         name=y_label, 
         line=dict(color=color, width=2),
         fill='tozeroy'
-    ))
-    
-    # Add moving average
-    fig.add_trace(go.Scatter(
-        x=df['created_at'], y=df[ma_col], 
-        mode='lines', 
-        name='Moving Avg', 
-        line=dict(color='red', width=2),
-        fill='tonexty'
     ))
     
     fig.update_layout(
@@ -87,6 +73,9 @@ def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
     with st.sidebar:
+        img = Image.open("Logo.png")
+        st.image(img)
+        
         selected = option_menu(
             menu_title="Main Menu",
             options=["Home", "Warehouse", "Query Optimization and Processing", "Storage", "Contact Us"],
@@ -97,19 +86,17 @@ def main():
 
     if selected == "Home":
         st.header('ThingSpeak Temperature and Humidity Dashboard (UTC-3)')
-        img = Image.open("Logo.png")
-        st.image(img)
 
         df = fetch_data()
 
         col1, col2 = st.columns(2)
 
         with col1:
-            fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)', 'blue')
+            fig_temp = create_plot(df, 'field1', 'Temperature Over Time', 'Temperature (°C)', 'blue')
             st.plotly_chart(fig_temp, use_container_width=True)
 
         with col2:
-            fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)', 'blue')
+            fig_humidity = create_plot(df, 'field2', 'Humidity Over Time', 'Humidity (%)', 'blue')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Display recent data in a table
