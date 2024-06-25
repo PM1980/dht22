@@ -109,7 +109,7 @@ def main():
 
     elif selected == "Contact Us":
         st.subheader(f"**Informações para contato e redes sociais**")
-        st.markdown("Instagram [here](www.instagram.com/projeto_ecivil/).")
+        st.markdown("Instagram [website](www.instagram.com/projeto_ecivil/).")
         # Contact form or information would go here
 
 if __name__ == "__main__":
