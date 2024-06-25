@@ -85,18 +85,18 @@ def main():
         )
 
     if selected == "Home":
-        st.header('ThingSpeak Temperature and Humidity Dashboard (UTC-3)')
+        st.header('Monitoramento da temperatura e umidade do laboratório LabTag/UFPE')
 
         df = fetch_data()
 
         col1, col2 = st.columns(2)
 
         with col1:
-            fig_temp = create_plot(df, 'field1', 'Temperature Over Time', 'Temperature (°C)', 'blue')
+            fig_temp = create_plot(df, 'field1', 'Temperatura vs tempo', 'Temperatura (°C)', 'blue')
             st.plotly_chart(fig_temp, use_container_width=True)
 
         with col2:
-            fig_humidity = create_plot(df, 'field2', 'Humidity Over Time', 'Humidity (%)', 'blue')
+            fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'blue')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Display recent data in a table
