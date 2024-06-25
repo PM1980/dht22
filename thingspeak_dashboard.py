@@ -22,7 +22,7 @@ def fetch_data():
 
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
-    st.title("ThingSpeak Temperature and Humidity Dashboard")
+    st.title("Dados de Temperatura e Umidade do laboratório LabTag")
 
     # Fetch data
     df = fetch_data()
@@ -31,7 +31,7 @@ def main():
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Temperature Over Time")
+        st.subheader("Temperatura")
         fig_temp = px.line(df, x='created_at', y='field1', 
                            labels={'field1': 'Temperature (°C)', 'created_at': 'Time'},
                            line_shape='spline')
@@ -39,7 +39,7 @@ def main():
         st.plotly_chart(fig_temp, use_container_width=True)
 
     with col2:
-        st.subheader("Humidity Over Time")
+        st.subheader("Umidade (%)")
         fig_humidity = px.line(df, x='created_at', y='field2', 
                                labels={'field2': 'Humidity (%)', 'created_at': 'Time'},
                                line_shape='spline')
