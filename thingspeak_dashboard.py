@@ -79,8 +79,8 @@ def main():
         
         selected = option_menu(
             menu_title="Main Menu",
-            options=["Home", "Código", "Setup", "Contato"],
-            icons=["house", "activity", "gear", "envelope"],
+            options=["Home", "Setup", "Código", "Contato"],
+            icons=["house", "gear", "activity", "envelope"],
             menu_icon="cast",
             default_index=0
         )
