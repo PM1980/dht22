@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from PIL import Image
 import requests
 from datetime import timedelta
+from PIL import Image
 from streamlit_option_menu import option_menu
 
 # Use Streamlit secrets for ThingSpeak credentials
@@ -45,14 +45,26 @@ def fetch_data():
         st.error(f"An unexpected error occurred: {e}")
         return pd.DataFrame()
 
-def create_plot(df, y_col, ma_col, title, y_label):
+def create_plot(df, y_col, ma_col, title, y_label, color):
     fig = go.Figure()
     
     # Add main data
-    fig.add_trace(go.Scatter(x=df['created_at'], y=df[y_col], mode='lines+markers', name=y_label))
+    fig.add_trace(go.Scatter(
+        x=df['created_at'], y=df[y_col], 
+        mode='lines', 
+        name=y_label, 
+        line=dict(color=color, width=2),
+        fill='tozeroy'
+    ))
     
     # Add moving average
-    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name='Moving Avg', line=dict(color='red')))
+    fig.add_trace(go.Scatter(
+        x=df['created_at'], y=df[ma_col], 
+        mode='lines', 
+        name='Moving Avg', 
+        line=dict(color='red', width=2),
+        fill='tonexty'
+    ))
     
     fig.update_layout(
         title=title,
@@ -93,25 +105,16 @@ def main():
         col1, col2 = st.columns(2)
 
         with col1:
-            fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)')
+            fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)', 'blue')
             st.plotly_chart(fig_temp, use_container_width=True)
 
         with col2:
-            fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)')
+            fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)', 'blue')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Display recent data in a table
         st.subheader("Recent Data (UTC-3)")
         st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
-
-        # Add a date range selector
-        st.sidebar.subheader("Date Range Selection (UTC-3)")
-        start_date = st.sidebar.date_input("Start Date", df['created_at'].min().date())
-        end_date = st.sidebar.date_input("End Date", df['created_at'].max().date())
-
-        # Filter data based on selected date range
-        mask = (df['created_at'].dt.date >= start_date) & (df['created_at'].dt.date <= end_date)
-        filtered_df = df.loc[mask]
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
