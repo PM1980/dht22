@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import requests
 from datetime import datetime, timedelta
-from pytz import UTC  # Import UTC timezone from pytz
+from pytz import UTC
 from PIL import Image
 from streamlit_option_menu import option_menu
 
@@ -18,22 +18,19 @@ def fetch_data():
     try:
         url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
         response = requests.get(url)
-        response.raise_for_status()  # Raises an HTTPError for bad responses
+        response.raise_for_status()
         data = response.json()
         
         df = pd.DataFrame(data['feeds'])
         df['created_at'] = pd.to_datetime(df['created_at'], utc=True)
-        df['created_at'] = df['created_at'] + TZ_OFFSET  # Adjust for UTC-3
+        df['created_at'] = df['created_at'] + TZ_OFFSET
         df['field1'] = pd.to_numeric(df['field1'], errors='coerce')  # Temperature
         df['field2'] = pd.to_numeric(df['field2'], errors='coerce')  # Humidity
         
-        # Sort the dataframe by date
-        df = df.sort_values('created_at')
-        
-        return df
+        return df.sort_values('created_at')
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching data from ThingSpeak: {e}")
-        return pd.DataFrame()  # Return an empty DataFrame
+        return pd.DataFrame()
     except KeyError as e:
         st.error(f"Error processing ThingSpeak data: {e}")
         return pd.DataFrame()
@@ -44,7 +41,6 @@ def fetch_data():
 def create_plot(df, y_col, title, y_label, color):
     fig = go.Figure()
     
-    # Add main data
     fig.add_trace(go.Scatter(
         x=df['created_at'], y=df[y_col], 
         mode='lines', 
@@ -103,14 +99,15 @@ def main():
 
         # Display recent data in a table without index
         st.subheader("Dados Recentes (UTC-3)")
-        st.table(df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True))
+        recent_data = df.tail(10).sort_values('created_at', ascending=False)
+        st.table(recent_data[['created_at', 'field1', 'field2']].reset_index(drop=True))
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
-        ten_days_ago = ten_days_ago.replace(tzinfo=UTC)  # Convert to UTC timezone
+        ten_days_ago = ten_days_ago.replace(tzinfo=UTC)
         recent_data = df[df['created_at'] >= ten_days_ago]
-        max_temps = recent_data.nlargest(3, 'field1')  # Top 3 maximum temperatures
-        min_temps = recent_data.nsmallest(3, 'field1')  # Top 3 minimum temperatures
+        max_temps = recent_data.nlargest(3, 'field1')
+        min_temps = recent_data.nsmallest(3, 'field1')
 
         # Prepare table for extreme temperatures without index
         max_temps_table = pd.DataFrame({
@@ -131,12 +128,10 @@ def main():
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
-        # Snowflake connection and querying would go here
 
     elif selected == "Contato":
         st.subheader(f"**Informações para contato e redes sociais**")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
-        # Contact form or information would go here
 
 if __name__ == "__main__":
     main()
