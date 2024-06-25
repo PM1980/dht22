@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 import requests
 from datetime import timedelta
 from PIL import Image
+from streamlit_option_menu import option_menu
 
 # Use Streamlit secrets for ThingSpeak credentials
 CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
@@ -73,39 +74,58 @@ def create_plot(df, y_col, ma_col, title, y_label):
 
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
-    st.title("ThingSpeak Temperature and Humidity Dashboard (UTC-3)")
-    img = Image.open("Logo.png")
-    st.image(img)
 
-    df = fetch_data()
+    with st.sidebar:
+        selected = option_menu(
+            menu_title="Main Menu",
+            options=["Home", "Warehouse", "Query Optimization and Processing", "Storage", "Contact Us"],
+            icons=["house", "gear", "activity", "snowflake", "envelope"],
+            menu_icon="cast",
+            default_index=0
+        )
 
-    col1, col2 = st.columns(2)
+    if selected == "Home":
+        st.header('ThingSpeak Temperature and Humidity Dashboard (UTC-3)')
+        img = Image.open("Logo.png")
+        st.image(img)
 
-    with col1:
-        fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)')
-        st.plotly_chart(fig_temp, use_container_width=True)
+        df = fetch_data()
 
-    with col2:
-        fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)')
-        st.plotly_chart(fig_humidity, use_container_width=True)
+        col1, col2 = st.columns(2)
 
-    # Display recent data in a table
-    st.subheader("Recent Data (UTC-3)")
-    st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
+        with col1:
+            fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)')
+            st.plotly_chart(fig_temp, use_container_width=True)
 
-    # Add a date range selector
-    st.sidebar.subheader("Date Range Selection (UTC-3)")
-    start_date = st.sidebar.date_input("Start Date", df['created_at'].min().date())
-    end_date = st.sidebar.date_input("End Date", df['created_at'].max().date())
+        with col2:
+            fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)')
+            st.plotly_chart(fig_humidity, use_container_width=True)
 
-    # Filter data based on selected date range
-    mask = (df['created_at'].dt.date >= start_date) & (df['created_at'].dt.date <= end_date)
-    filtered_df = df.loc[mask]
+        # Display recent data in a table
+        st.subheader("Recent Data (UTC-3)")
+        st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
 
-    # Display summary statistics
-    st.sidebar.subheader("Summary Statistics")
-    st.sidebar.write(f"Average Temperature: {filtered_df['field1'].mean():.2f} °C")
-    st.sidebar.write(f"Average Humidity: {filtered_df['field2'].mean():.2f} %")
+        # Add a date range selector
+        st.sidebar.subheader("Date Range Selection (UTC-3)")
+        start_date = st.sidebar.date_input("Start Date", df['created_at'].min().date())
+        end_date = st.sidebar.date_input("End Date", df['created_at'].max().date())
+
+        # Filter data based on selected date range
+        mask = (df['created_at'].dt.date >= start_date) & (df['created_at'].dt.date <= end_date)
+        filtered_df = df.loc[mask]
+
+        # Display summary statistics
+        st.sidebar.subheader("Summary Statistics")
+        st.sidebar.write(f"Average Temperature: {filtered_df['field1'].mean():.2f} °C")
+        st.sidebar.write(f"Average Humidity: {filtered_df['field2'].mean():.2f} %")
+
+    elif selected == "Warehouse":
+        st.subheader(f"**You Have selected {selected}**")
+        # Snowflake connection and querying would go here
+
+    elif selected == "Contact Us":
+        st.subheader(f"**You Have selected {selected}**")
+        # Contact form or information would go here
 
 if __name__ == "__main__":
     main()
