@@ -3,32 +3,46 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import requests
+from datetime import timedelta
 
 # Use Streamlit secrets for ThingSpeak credentials
 CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
 READ_API_KEY = st.secrets["thingspeak"]["read_api_key"]
 
-def fetch_data():
-    url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
-    response = requests.get(url)
-    data = response.json()
-    
-    df = pd.DataFrame(data['feeds'])
-    df['created_at'] = pd.to_datetime(df['created_at'])
-    df['field1'] = pd.to_numeric(df['field1'])  # Temperature
-    df['field2'] = pd.to_numeric(df['field2'])  # Humidity
-    
-    # Sort the dataframe by date
-    df = df.sort_values('created_at')
-    
-    # Calculate moving averages using a fixed window of 72 periods (assuming 4 readings per hour, this is roughly 3 days)
-    window_size = 72
-    df['temp_ma'] = df['field1'].rolling(window=window_size, min_periods=1).mean()
-    df['humidity_ma'] = df['field2'].rolling(window=window_size, min_periods=1).mean()
-    
-    return df
+# Define the timezone offset
+TZ_OFFSET = timedelta(hours=-3)  # UTC-3
 
-# The rest of the code remains the same
+def fetch_data():
+    try:
+        url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
+        response = requests.get(url)
+        response.raise_for_status()  # Raises an HTTPError for bad responses
+        data = response.json()
+        
+        df = pd.DataFrame(data['feeds'])
+        df['created_at'] = pd.to_datetime(df['created_at'], utc=True)
+        df['created_at'] = df['created_at'] + TZ_OFFSET  # Adjust for UTC-3
+        df['field1'] = pd.to_numeric(df['field1'], errors='coerce')  # Temperature
+        df['field2'] = pd.to_numeric(df['field2'], errors='coerce')  # Humidity
+        
+        # Sort the dataframe by date
+        df = df.sort_values('created_at')
+        
+        # Calculate moving averages
+        window_size = 72
+        df['temp_ma'] = df['field1'].rolling(window=window_size, min_periods=1).mean()
+        df['humidity_ma'] = df['field2'].rolling(window=window_size, min_periods=1).mean()
+        
+        return df
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error fetching data from ThingSpeak: {e}")
+        return pd.DataFrame()  # Return an empty DataFrame
+    except KeyError as e:
+        st.error(f"Error processing ThingSpeak data: {e}")
+        return pd.DataFrame()
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        return pd.DataFrame()
 
 def create_plot(df, y_col, ma_col, title, y_label):
     fig = go.Figure()
@@ -41,7 +55,7 @@ def create_plot(df, y_col, ma_col, title, y_label):
     
     fig.update_layout(
         title=title,
-        xaxis_title='Time',
+        xaxis_title='Time (UTC-3)',
         yaxis_title=y_label,
         legend_title='Legend',
         font=dict(family="Arial", size=12),
@@ -58,7 +72,7 @@ def create_plot(df, y_col, ma_col, title, y_label):
 
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
-    st.title("ThingSpeak Temperature and Humidity Dashboard")
+    st.title("ThingSpeak Temperature and Humidity Dashboard (UTC-3)")
 
     df = fetch_data()
 
@@ -73,11 +87,11 @@ def main():
         st.plotly_chart(fig_humidity, use_container_width=True)
 
     # Display recent data in a table
-    st.subheader("Recent Data")
+    st.subheader("Recent Data (UTC-3)")
     st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
 
     # Add a date range selector
-    st.sidebar.subheader("Date Range Selection")
+    st.sidebar.subheader("Date Range Selection (UTC-3)")
     start_date = st.sidebar.date_input("Start Date", df['created_at'].min().date())
     end_date = st.sidebar.date_input("End Date", df['created_at'].max().date())
 
