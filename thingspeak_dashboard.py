@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import requests
 
 # Use Streamlit secrets for ThingSpeak credentials
@@ -8,42 +9,61 @@ CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
 READ_API_KEY = st.secrets["thingspeak"]["read_api_key"]
 
 def fetch_data():
-    # Fetch data from ThingSpeak
     url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
     response = requests.get(url)
     data = response.json()
     
-    # Convert to DataFrame
     df = pd.DataFrame(data['feeds'])
     df['created_at'] = pd.to_datetime(df['created_at'])
     df['field1'] = pd.to_numeric(df['field1'])  # Temperature
     df['field2'] = pd.to_numeric(df['field2'])  # Humidity
+    
+    # Calculate 3-day moving averages
+    df['temp_ma'] = df['field1'].rolling(window='3D').mean()
+    df['humidity_ma'] = df['field2'].rolling(window='3D').mean()
+    
     return df
+
+def create_plot(df, y_col, ma_col, title, y_label):
+    fig = go.Figure()
+    
+    # Add main data
+    fig.add_trace(go.Scatter(x=df['created_at'], y=df[y_col], mode='lines+markers', name=y_label))
+    
+    # Add moving average
+    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name=f'3-Day Moving Avg', line=dict(color='red')))
+    
+    fig.update_layout(
+        title=title,
+        xaxis_title='Time',
+        yaxis_title=y_label,
+        legend_title='Legend',
+        font=dict(family="Arial", size=12),
+        plot_bgcolor='white',
+        xaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        yaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        xaxis_rangeslider_visible=True
+    )
+    
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
+    
+    return fig
 
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
-    st.title("Dados de Temperatura e Umidade do laboratório LabTag")
+    st.title("ThingSpeak Temperature and Humidity Dashboard")
 
-    # Fetch data
     df = fetch_data()
 
-    # Create two columns for the charts
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Temperatura")
-        fig_temp = px.line(df, x='created_at', y='field1', 
-                           labels={'field1': 'Temperature (°C)', 'created_at': 'Time'},
-                           line_shape='spline')
-        fig_temp.update_layout(height=400)
+        fig_temp = create_plot(df, 'field1', 'temp_ma', 'Temperature Over Time', 'Temperature (°C)')
         st.plotly_chart(fig_temp, use_container_width=True)
 
     with col2:
-        st.subheader("Umidade (%)")
-        fig_humidity = px.line(df, x='created_at', y='field2', 
-                               labels={'field2': 'Humidity (%)', 'created_at': 'Time'},
-                               line_shape='spline')
-        fig_humidity.update_layout(height=400)
+        fig_humidity = create_plot(df, 'field2', 'humidity_ma', 'Humidity Over Time', 'Humidity (%)')
         st.plotly_chart(fig_humidity, use_container_width=True)
 
     # Display recent data in a table
