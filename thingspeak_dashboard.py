@@ -78,7 +78,7 @@ def main():
         
         selected = option_menu(
             menu_title="Main Menu",
-            options=["Home", "Warehouse", "Query Optimization and Processing", "Storage", "Contact Us"],
+            options=["Home", "Warehouse", "Query Optimization and Processing", "Storage", "Contato"],
             icons=["house", "gear", "activity", "snowflake", "envelope"],
             menu_icon="cast",
             default_index=0
@@ -108,7 +108,7 @@ def main():
         st.subheader(f"**You Have selected {selected}**")
         # Snowflake connection and querying would go here
 
-    elif selected == "Contact Us":
+    elif selected == "Contato":
         st.subheader(f"**Informações para contato e redes sociais**")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
         # Contact form or information would go here
