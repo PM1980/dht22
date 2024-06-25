@@ -131,9 +131,7 @@ def main():
         st.markdown("[Código fonte do Dashboard](https://github.com/PM1980/dht22/blob/main/thingspeak_dashboard.py)")
 
     elif selected == "Contato":
-        st.subheader("Informações para contato e redes sociais")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
-        # Contact form or information would go here
 
 if __name__ == "__main__":
     main()
