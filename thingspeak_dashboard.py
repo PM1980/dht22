@@ -73,10 +73,22 @@ def create_plot(df, y_col, title, y_label, color):
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
+    # Sidebar setup
     with st.sidebar:
-        img = Image.open("Logo e-Civil.png")
-        st.image(img)
+        # Sidebar logo
+        st.sidebar.image("logo.png", use_column_width=True)
         
+        # Sidebar instructions
+        st.sidebar.markdown("""
+            ## Instruções
+            Use o menu à esquerda para navegar:
+            - **Home**: Monitoramento de temperatura e umidade.
+            - **Setup**: Detalhamento do microcontrolador e sensor.
+            - **Código**: Código fonte do Dashboard.
+            - **Contato**: Informações de contato.
+        """)
+
+        # Sidebar menu
         selected = option_menu(
             menu_title="Main Menu",
             options=["Home", "Setup", "Código", "Contato"],
@@ -85,6 +97,7 @@ def main():
             default_index=0
         )
 
+    # Main content based on sidebar selection
     if selected == "Home":
         st.header("Monitoramento da temperatura e umidade")
         st.header("Laboratório LabTag/UFPE")
