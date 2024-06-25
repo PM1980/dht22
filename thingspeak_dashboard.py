@@ -79,8 +79,8 @@ def main():
         
         selected = option_menu(
             menu_title="Main Menu",
-            options=["Home", "Warehouse", "Setup", "Contato"],
-            icons=["house", "gear", "activity", "envelope"],
+            options=["Home", "Código", "Setup", "Contato"],
+            icons=["house", "activity", "gear", "envelope"],
             menu_icon="cast",
             default_index=0
         )
@@ -130,15 +130,16 @@ def main():
         st.subheader("Temperaturas Extremas")
         st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
         st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
-        
+    
+    elif selected == "Código":
+        st.markdown("[Código fonte do Dashboard](https://github.com/PM1980/dht22/blob/main/thingspeak_dashboard.py)")
+    
     elif selected == "Setup":
         st.subheader("Detalhamento do microcontrolador e sensor")
         st.image("setup_esp_dht22.png", use_column_width=True)
 
     elif selected == "Contato":
-        st.subheader("Informações para contato e redes sociais")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
-        # Contact form or information would go here
 
 if __name__ == "__main__":
     main()
