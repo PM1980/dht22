@@ -103,7 +103,7 @@ def main():
 
         # Display recent data in a table without index
         st.subheader("Dados Recentes (UTC-3)")
-        st.table(df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True).to_html(index=False))
+        st.table(df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True))
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
@@ -124,10 +124,10 @@ def main():
 
         # Display extreme temperatures tables without index
         st.subheader("Temperaturas Máximas (Últimos 10 dias)")
-        st.table(max_temps_table.to_html(index=False))
+        st.table(max_temps_table)
 
         st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
-        st.table(min_temps_table.to_html(index=False))
+        st.table(min_temps_table)
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
