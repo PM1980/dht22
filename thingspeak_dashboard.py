@@ -71,7 +71,8 @@ def create_plot(df, y_col, title, y_label, color):
     return fig
 
 def main():
-    st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
+    st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide", initial_sidebar_state="expanded")
+    # st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
     with st.sidebar:
         img = Image.open("Logo e-Civil.png")
