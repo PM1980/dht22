@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import requests
 from datetime import datetime, timedelta
+from pytz import UTC  # Import UTC timezone from pytz
 from PIL import Image
 from streamlit_option_menu import option_menu
 
@@ -106,6 +107,7 @@ def main():
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
+        ten_days_ago = ten_days_ago.replace(tzinfo=UTC)  # Convert to UTC timezone
         recent_data = df[df['created_at'] >= ten_days_ago]
         max_temp = recent_data['field1'].max()
         min_temp = recent_data['field1'].min()
