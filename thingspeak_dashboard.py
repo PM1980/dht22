@@ -116,11 +116,11 @@ def main():
         max_temps_table = pd.DataFrame({
             'Data e Hora': max_temps['created_at'].dt.strftime('%Y-%m-%d %H:%M:%S'),
             'Temperatura (°C)': max_temps['field1']
-        }).reset_index(drop=True)
+        })
         min_temps_table = pd.DataFrame({
             'Data e Hora': min_temps['created_at'].dt.strftime('%Y-%m-%d %H:%M:%S'),
             'Temperatura (°C)': min_temps['field1']
-        }).reset_index(drop=True)
+        })
 
         # Display extreme temperatures tables without index
         st.subheader("Temperaturas Máximas (Últimos 10 dias)")
