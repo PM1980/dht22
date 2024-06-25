@@ -123,6 +123,13 @@ def main():
         st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
         st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
         
+        # Display first and last timestamps
+        st.subheader("Primeiro e Último Registro")
+        first_timestamp = df['created_at'].iloc[0]
+        last_timestamp = df['created_at'].iloc[-1]
+        st.write(f"Primeiro Registro: {first_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
+        st.write(f"Último Registro: {last_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")    
+    
     elif selected == "Setup":
         st.subheader("Detalhamento do microcontrolador e sensor")
         st.image("setup_esp_dht22.png", use_column_width=True)
