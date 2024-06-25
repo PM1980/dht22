@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import plotly.graph_objects as go
 import requests
 from datetime import datetime, timedelta
 from pytz import UTC  # Import UTC timezone from pytz
@@ -16,7 +15,7 @@ TZ_OFFSET = timedelta(hours=-3)  # UTC-3
 
 def fetch_data():
     try:
-        url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=15000"
+        url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses
         data = response.json()
@@ -40,35 +39,6 @@ def fetch_data():
     except Exception as e:
         st.error(f"An unexpected error occurred: {e}")
         return pd.DataFrame()
-
-def create_plot(df, y_col, title, y_label, color):
-    fig = go.Figure()
-    
-    # Add main data
-    fig.add_trace(go.Scatter(
-        x=df['created_at'], y=df[y_col], 
-        mode='lines', 
-        name=y_label, 
-        line=dict(color=color, width=2),
-        fill='tozeroy'
-    ))
-    
-    fig.update_layout(
-        title=title,
-        xaxis_title='Time (UTC-3)',
-        yaxis_title=y_label,
-        legend_title='Legend',
-        font=dict(family="Arial", size=12),
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=True, gridcolor='lightgrey'),
-        yaxis=dict(showgrid=True, gridcolor='lightgrey'),
-        xaxis_rangeslider_visible=True
-    )
-    
-    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
-    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
-    
-    return fig
 
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
@@ -98,16 +68,10 @@ def main():
             current_temp = df['field1'].iloc[-1]  # Get the latest temperature value
             st.write(f"Atual: {current_temp:.2f} °C")
             
-            fig_temp = create_plot(df, 'field1', 'Temperatura vs tempo', 'Temperatura (°C)', 'blue')
-            st.plotly_chart(fig_temp, use_container_width=True)
-
         with col2:
             st.subheader("Umidade Atual")
             current_humidity = df['field2'].iloc[-1]  # Get the latest humidity value
             st.write(f"Atual: {current_humidity:.2f} %")
-            
-            fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'green')
-            st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
@@ -118,24 +82,29 @@ def main():
         max_temp_time = recent_data.loc[recent_data['field1'].idxmax(), 'created_at']
         min_temp_time = recent_data.loc[recent_data['field1'].idxmin(), 'created_at']
 
-        # Display captions with maximum and minimum temperatures and corresponding datetime
+        max_humidity = recent_data['field2'].max()
+        min_humidity = recent_data['field2'].min()
+        max_humidity_time = recent_data.loc[recent_data['field2'].idxmax(), 'created_at']
+        min_humidity_time = recent_data.loc[recent_data['field2'].idxmin(), 'created_at']
+
+        # Display maximum and minimum values in a styled box
         st.subheader("Temperaturas Extremas (Últimos 10 dias)")
-        st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
-        st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
+        with st.beta_expander("Detalhes das Temperaturas"):
+            st.markdown(
+                f"**Máxima Temperatura:** {max_temp:.2f} °C\n"
+                f"Registrada em: {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
+                f"**Mínima Temperatura:** {min_temp:.2f} °C\n"
+                f"Registrada em: {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
+            )
 
-        # Plot full range temperature and humidity
-        st.subheader("Série Temporal Completa")
-        st.plotly_chart(fig_temp, use_container_width=True)
-        st.plotly_chart(fig_humidity, use_container_width=True)
-
-    elif selected == "Warehouse":
-        st.subheader(f"**You Have selected {selected}**")
-        # Snowflake connection and querying would go here
-
-    elif selected == "Contato":
-        st.subheader(f"**Informações para contato e redes sociais**")
-        st.markdown("https://www.instagram.com/projeto_ecivil/")
-        # Contact form or information would go here
+        st.subheader("Umidades Extremas (Últimos 10 dias)")
+        with st.beta_expander("Detalhes das Umidades"):
+            st.markdown(
+                f"**Máxima Umidade:** {max_humidity:.2f} %\n"
+                f"Registrada em: {max_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
+                f"**Mínima Umidade:** {min_humidity:.2f} %\n"
+                f"Registrada em: {min_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
+            )
 
 if __name__ == "__main__":
     main()
