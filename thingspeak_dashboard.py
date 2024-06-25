@@ -73,7 +73,7 @@ def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
     with st.sidebar:
-        img = Image.open("Logo.png")
+        img = Image.open("Logo e-Civil.png")
         st.image(img)
         
         selected = option_menu(
