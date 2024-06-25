@@ -101,7 +101,7 @@ def main():
             st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Display recent data in a table
-        st.subheader("Recent Data (UTC-3)")
+        st.subheader("Dados Recentes (UTC-3)")
         st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
 
     elif selected == "Warehouse":
