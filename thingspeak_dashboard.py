@@ -109,7 +109,7 @@ def main():
             'text-align': 'center',
             'background-color': 'lightblue',
             'color': 'black'
-        }).hide_index())
+        }))
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
@@ -134,14 +134,14 @@ def main():
             'text-align': 'center',
             'background-color': 'lightgreen',
             'color': 'black'
-        }))
+        }).hide_index())
 
         st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
         st.table(min_temps_table.style.set_properties(**{
             'text-align': 'center',
             'background-color': 'lightcoral',
             'color': 'black'
-        }))
+        }).hide_index())
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
