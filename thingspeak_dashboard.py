@@ -66,6 +66,19 @@ def create_plot(df, y_col, title, y_label, color):
     
     return fig
 
+def style_dataframe(df):
+    return df.style.set_properties(**{
+        'background-color': 'white',
+        'color': 'black',
+        'border-color': 'lightgrey'
+    }).set_table_styles([{
+        'selector': 'th',
+        'props': [('background-color', '#4CAF50'), 
+                  ('color', 'white'),
+                  ('font-weight', 'bold'),
+                  ('padding', '12px 15px')]
+    }]).hide_index()
+
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
@@ -97,10 +110,15 @@ def main():
             fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'blue')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
-        # Display recent data in a table without index and headers
+        # Display recent data in a fancy table
         st.subheader("Dados Recentes (UTC-3)")
         recent_data = df.tail(10).sort_values('created_at', ascending=False)
-        st.write(recent_data[['created_at', 'field1', 'field2']].to_string(index=False, header=False))
+        recent_data = recent_data[['created_at', 'field1', 'field2']].rename(columns={
+            'created_at': 'Data e Hora',
+            'field1': 'Temperatura (°C)',
+            'field2': 'Umidade (%)'
+        })
+        st.dataframe(style_dataframe(recent_data), height=400)
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
@@ -109,12 +127,20 @@ def main():
         max_temps = recent_data.nlargest(3, 'field1')
         min_temps = recent_data.nsmallest(3, 'field1')
 
-        # Display extreme temperatures tables without index and headers
+        # Display extreme temperatures in fancy tables
         st.subheader("Temperaturas Máximas (Últimos 10 dias)")
-        st.write(max_temps[['created_at', 'field1']].to_string(index=False, header=False))
+        max_temps_table = max_temps[['created_at', 'field1']].rename(columns={
+            'created_at': 'Data e Hora',
+            'field1': 'Temperatura (°C)'
+        })
+        st.dataframe(style_dataframe(max_temps_table), height=200)
 
         st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
-        st.write(min_temps[['created_at', 'field1']].to_string(index=False, header=False))
+        min_temps_table = min_temps[['created_at', 'field1']].rename(columns={
+            'created_at': 'Data e Hora',
+            'field1': 'Temperatura (°C)'
+        })
+        st.dataframe(style_dataframe(min_temps_table), height=200)
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
