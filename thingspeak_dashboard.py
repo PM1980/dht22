@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import requests
 from datetime import datetime, timedelta
 from pytz import UTC  # Import UTC timezone from pytz
-from PIL import Image
+from PIL import Image, ImageFont
 from streamlit_option_menu import option_menu
 
 # Use Streamlit secrets for ThingSpeak credentials
@@ -101,14 +101,14 @@ def main():
             fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'blue')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
-        # Display recent data in a styled table without index
+        # Display recent data with selected columns in a styled table
         st.subheader("Dados Recentes (UTC-3)")
-        recent_data_table = df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True)
+        recent_data_table = df.tail(10).sort_values('created_at', ascending=False).reset_index(drop=True)[['created_at', 'field1', 'field2']]
         st.table(recent_data_table.style.set_properties(**{
+            'font-family': 'Arial, sans-serif',  # Example of a more fancy font style
             'text-align': 'center',
             'background-color': 'lightblue',
-            'color': 'black',
-            'font-weight': 'bold'
+            'color': 'black'
         }))
 
         # Calculate maximum and minimum temperatures in the last 10 days
@@ -133,16 +133,14 @@ def main():
         st.table(max_temps_table.style.set_properties(**{
             'text-align': 'center',
             'background-color': 'lightgreen',
-            'color': 'black',
-            'font-weight': 'bold'
+            'color': 'black'
         }))
 
         st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
         st.table(min_temps_table.style.set_properties(**{
             'text-align': 'center',
             'background-color': 'lightcoral',
-            'color': 'black',
-            'font-weight': 'bold'
+            'color': 'black'
         }))
 
     elif selected == "Warehouse":
