@@ -73,10 +73,22 @@ def create_plot(df, y_col, title, y_label, color):
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
+    # Fixed information display
+    st.markdown("""
+    # ThingSpeak Dashboard
+
+    ## Instruções
+    Use o menu à esquerda para navegar:
+    - **Home**: Monitoramento de temperatura e umidade.
+    - **Setup**: Detalhamento do microcontrolador e sensor.
+    - **Código**: Código fonte do Dashboard.
+    - **Contato**: Informações de contato.
+    """)
+
+    # Sidebar setup
     with st.sidebar:
-        img = Image.open("Logo e-Civil.png")
-        st.image(img)
-        
+        # Sidebar logo and content (if applicable)
+        st.sidebar.image("logo.png", use_column_width=True)
         selected = option_menu(
             menu_title="Main Menu",
             options=["Home", "Setup", "Código", "Contato"],
@@ -85,6 +97,7 @@ def main():
             default_index=0
         )
 
+    # Main content based on sidebar selection
     if selected == "Home":
         st.header("Monitoramento da temperatura e umidade")
         st.header("Laboratório LabTag/UFPE")
@@ -140,9 +153,6 @@ def main():
 
     elif selected == "Contato":
         st.markdown("https://www.instagram.com/projeto_ecivil/")
-
-    # Brief explanation of sidebar collapse and expand feature
-    st.sidebar.markdown("*Clique na seta para expandir ou contrair o menu.*")
 
 if __name__ == "__main__":
     main()
