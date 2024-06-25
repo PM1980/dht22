@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import requests
 from datetime import timedelta
+from PIL import Image
 
 # Use Streamlit secrets for ThingSpeak credentials
 CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
@@ -73,6 +74,7 @@ def create_plot(df, y_col, ma_col, title, y_label):
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
     st.title("ThingSpeak Temperature and Humidity Dashboard (UTC-3)")
+    img = Image.open("Logo.png")
 
     df = fetch_data()
 
