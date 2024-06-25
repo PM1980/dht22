@@ -16,7 +16,7 @@ TZ_OFFSET = timedelta(hours=-3)  # UTC-3
 
 def fetch_data():
     try:
-        url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1000"
+        url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=15000"
         response = requests.get(url)
         response.raise_for_status()  # Raises an HTTPError for bad responses
         data = response.json()
