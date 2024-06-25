@@ -87,24 +87,22 @@ def main():
         max_humidity_time = recent_data.loc[recent_data['field2'].idxmax(), 'created_at']
         min_humidity_time = recent_data.loc[recent_data['field2'].idxmin(), 'created_at']
 
-        # Display maximum and minimum values in a styled box
+        # Display maximum and minimum values with timestamps
         st.subheader("Temperaturas Extremas (Últimos 10 dias)")
-        with st.beta_expander("Detalhes das Temperaturas"):
-            st.markdown(
-                f"**Máxima Temperatura:** {max_temp:.2f} °C\n"
-                f"Registrada em: {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
-                f"**Mínima Temperatura:** {min_temp:.2f} °C\n"
-                f"Registrada em: {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
-            )
+        st.markdown(
+            f"**Máxima Temperatura:** {max_temp:.2f} °C\n"
+            f"Registrada em: {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
+            f"**Mínima Temperatura:** {min_temp:.2f} °C\n"
+            f"Registrada em: {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
+        )
 
         st.subheader("Umidades Extremas (Últimos 10 dias)")
-        with st.beta_expander("Detalhes das Umidades"):
-            st.markdown(
-                f"**Máxima Umidade:** {max_humidity:.2f} %\n"
-                f"Registrada em: {max_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
-                f"**Mínima Umidade:** {min_humidity:.2f} %\n"
-                f"Registrada em: {min_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
-            )
+        st.markdown(
+            f"**Máxima Umidade:** {max_humidity:.2f} %\n"
+            f"Registrada em: {max_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3\n\n"
+            f"**Mínima Umidade:** {min_humidity:.2f} %\n"
+            f"Registrada em: {min_humidity_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3"
+        )
 
 if __name__ == "__main__":
     main()
