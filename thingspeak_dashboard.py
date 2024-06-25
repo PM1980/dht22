@@ -123,6 +123,11 @@ def main():
         st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
         st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
 
+        # Plot full range temperature and humidity
+        st.subheader("Série Temporal Completa")
+        st.plotly_chart(fig_temp, use_container_width=True)
+        st.plotly_chart(fig_humidity, use_container_width=True)
+
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
         # Snowflake connection and querying would go here
