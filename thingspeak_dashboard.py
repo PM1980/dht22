@@ -79,8 +79,8 @@ def main():
         
         selected = option_menu(
             menu_title="Main Menu",
-            options=["Home", "Setup", "Código", "Contato"],
-            icons=["house", "activity", "gear", "envelope"],
+            options=["Home", "Warehouse", "Setup", "Contato"],
+            icons=["house", "gear", "activity", "envelope"],
             menu_icon="cast",
             default_index=0
         )
@@ -109,36 +109,36 @@ def main():
             fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'green')
             st.plotly_chart(fig_humidity, use_container_width=True)
 
-        # Calculate maximum and minimum temperatures in the last 10 days
-        ten_days_ago = datetime.now() - timedelta(days=10)
-        ten_days_ago = ten_days_ago.replace(tzinfo=UTC)  # Convert to UTC timezone
-        recent_data = df[df['created_at'] >= ten_days_ago]
-        max_temp = recent_data['field1'].max()
-        min_temp = recent_data['field1'].min()
-        max_temp_time = recent_data.loc[recent_data['field1'].idxmax(), 'created_at']
-        min_temp_time = recent_data.loc[recent_data['field1'].idxmin(), 'created_at']
-
-        # Display captions with maximum and minimum temperatures and corresponding datetime
-        st.subheader("Temperaturas Extremas (Últimos 10 dias)")
-        st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
-        st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
-        
         # Display first and last timestamps
         st.subheader("Primeiro e Último Registro")
         first_timestamp = df['created_at'].iloc[0]
         last_timestamp = df['created_at'].iloc[-1]
         st.write(f"Primeiro Registro: {first_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
-        st.write(f"Último Registro: {last_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")    
-    
+        st.write(f"Último Registro: {last_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
+        
+        # Calculate days passed between first and last timestamp
+        days_passed = (last_timestamp - first_timestamp).days
+        st.write(f"Dias Passados: {days_passed} dias")
+        
+        # Calculate maximum and minimum temperatures in the dataset
+        max_temp = df['field1'].max()
+        min_temp = df['field1'].min()
+        max_temp_time = df.loc[df['field1'].idxmax(), 'created_at']
+        min_temp_time = df.loc[df['field1'].idxmin(), 'created_at']
+
+        # Display captions with maximum and minimum temperatures and corresponding datetime
+        st.subheader("Temperaturas Extremas")
+        st.write(f"Máxima: {max_temp:.2f} °C, Registrada em {max_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
+        st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
+        
     elif selected == "Setup":
         st.subheader("Detalhamento do microcontrolador e sensor")
         st.image("setup_esp_dht22.png", use_column_width=True)
-    
-    elif selected == "Código":
-        st.markdown("[Código fonte do Dashboard](https://github.com/PM1980/dht22/blob/main/thingspeak_dashboard.py)")
 
     elif selected == "Contato":
+        st.subheader("Informações para contato e redes sociais")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
+        # Contact form or information would go here
 
 if __name__ == "__main__":
     main()
