@@ -109,16 +109,25 @@ def main():
         ten_days_ago = datetime.now() - timedelta(days=10)
         ten_days_ago = ten_days_ago.replace(tzinfo=UTC)  # Convert to UTC timezone
         recent_data = df[df['created_at'] >= ten_days_ago]
-        max_temp = recent_data['field1'].max()
-        min_temp = recent_data['field1'].min()
+        max_temps = recent_data.nlargest(3, 'field1')  # Top 3 maximum temperatures
+        min_temps = recent_data.nsmallest(3, 'field1')  # Top 3 minimum temperatures
 
-        # Display extreme temperatures table
-        st.subheader("Temperaturas Extremas (Últimos 10 dias)")
-        extreme_temps = pd.DataFrame({
-            'Tipo': ['Máxima', 'Mínima'],
-            'Temperatura (°C)': [max_temp, min_temp]
+        # Prepare table for extreme temperatures
+        max_temps_table = pd.DataFrame({
+            'Data e Hora': max_temps['created_at'].dt.strftime('%Y-%m-%d %H:%M:%S'),
+            'Temperatura (°C)': max_temps['field1']
         })
-        st.table(extreme_temps)
+        min_temps_table = pd.DataFrame({
+            'Data e Hora': min_temps['created_at'].dt.strftime('%Y-%m-%d %H:%M:%S'),
+            'Temperatura (°C)': min_temps['field1']
+        })
+
+        # Display extreme temperatures tables
+        st.subheader("Temperaturas Máximas (Últimos 10 dias)")
+        st.table(max_temps_table)
+
+        st.subheader("Temperaturas Mínimas (Últimos 10 dias)")
+        st.table(min_temps_table)
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
