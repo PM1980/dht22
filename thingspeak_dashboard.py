@@ -124,11 +124,11 @@ def main():
         st.write(f"Mínima: {min_temp:.2f} °C, Registrada em {min_temp_time.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
         
     elif selected == "Setup":
-        st.subheader(f"**Detalhamento do microcontrolador e sensor**")
-        
+        st.subheader("Detalhamento do microcontrolador e sensor")
+        st.image("setup_esp_dht22.png", use_column_width=True)
 
     elif selected == "Contato":
-        st.subheader(f"**Informações para contato e redes sociais**")
+        st.subheader("Informações para contato e redes sociais")
         st.markdown("https://www.instagram.com/projeto_ecivil/")
         # Contact form or information would go here
 
