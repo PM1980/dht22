@@ -41,6 +41,35 @@ def fetch_data():
         st.error(f"An unexpected error occurred: {e}")
         return pd.DataFrame()
 
+def create_plot(df, y_col, title, y_label, color):
+    fig = go.Figure()
+    
+    # Add main data
+    fig.add_trace(go.Scatter(
+        x=df['created_at'], y=df[y_col], 
+        mode='lines', 
+        name=y_label, 
+        line=dict(color=color, width=2),
+        fill='tozeroy'
+    ))
+    
+    fig.update_layout(
+        title=title,
+        xaxis_title='Time (UTC-3)',
+        yaxis_title=y_label,
+        legend_title='Legend',
+        font=dict(family="Arial", size=12),
+        plot_bgcolor='white',
+        xaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        yaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        xaxis_rangeslider_visible=True
+    )
+    
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
+    
+    return fig
+
 def main():
     st.set_page_config(page_title="ThingSpeak Dashboard", layout="wide")
 
@@ -68,11 +97,17 @@ def main():
             st.subheader("Temperatura Atual")
             current_temp = df['field1'].iloc[-1]  # Get the latest temperature value
             st.write(f"Atual: {current_temp:.2f} °C")
+            
+            fig_temp = create_plot(df, 'field1', 'Temperatura vs tempo', 'Temperatura (°C)', 'blue')
+            st.plotly_chart(fig_temp, use_container_width=True)
 
         with col2:
             st.subheader("Umidade Atual")
             current_humidity = df['field2'].iloc[-1]  # Get the latest humidity value
             st.write(f"Atual: {current_humidity:.2f} %")
+            
+            fig_humidity = create_plot(df, 'field2', 'Umidade vs tempo', 'Umidade (%)', 'green')
+            st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
