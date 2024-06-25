@@ -141,5 +141,8 @@ def main():
     elif selected == "Contato":
         st.markdown("https://www.instagram.com/projeto_ecivil/")
 
+    # Brief explanation of sidebar collapse and expand feature
+    st.sidebar.markdown("*Clique na seta para expandir ou contrair o menu.*")
+
 if __name__ == "__main__":
     main()
