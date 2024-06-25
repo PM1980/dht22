@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import requests
-from datetime import timedelta
+from datetime import datetime, timedelta
 from PIL import Image
 from streamlit_option_menu import option_menu
 
@@ -103,6 +103,20 @@ def main():
         # Display recent data in a table
         st.subheader("Dados Recentes (UTC-3)")
         st.dataframe(df.tail(10).sort_values('created_at', ascending=False))
+
+        # Calculate maximum and minimum temperatures in the last 10 days
+        ten_days_ago = datetime.now() - timedelta(days=10)
+        recent_data = df[df['created_at'] >= ten_days_ago]
+        max_temp = recent_data['field1'].max()
+        min_temp = recent_data['field1'].min()
+
+        # Display extreme temperatures table
+        st.subheader("Temperaturas Extremas (Últimos 10 dias)")
+        extreme_temps = pd.DataFrame({
+            'Tipo': ['Máxima', 'Mínima'],
+            'Temperatura (°C)': [max_temp, min_temp]
+        })
+        st.table(extreme_temps)
 
     elif selected == "Warehouse":
         st.subheader(f"**You Have selected {selected}**")
