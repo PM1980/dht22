@@ -110,7 +110,7 @@ def main():
             st.plotly_chart(fig_humidity, use_container_width=True)
 
         # Display first and last timestamps
-        st.subheader("Primeiro e Último Registro")
+        st.subheader("Primeiro e Último Registros")
         first_timestamp = df['created_at'].iloc[0]
         last_timestamp = df['created_at'].iloc[-1]
         st.write(f"Primeiro Registro: {first_timestamp.strftime('%Y-%m-%d %H:%M:%S')} UTC-3")
@@ -118,7 +118,7 @@ def main():
         
         # Calculate days passed between first and last timestamp
         days_passed = (last_timestamp - first_timestamp).days
-        st.write(f"Dias Passados: {days_passed} dias")
+        st.write(f"Intervalo total de medição: {days_passed} dias")
         
         # Calculate maximum and minimum temperatures in the dataset
         max_temp = df['field1'].max()
