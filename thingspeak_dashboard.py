@@ -18,11 +18,17 @@ def fetch_data():
     df['field1'] = pd.to_numeric(df['field1'])  # Temperature
     df['field2'] = pd.to_numeric(df['field2'])  # Humidity
     
-    # Calculate 3-day moving averages
-    df['temp_ma'] = df['field1'].rolling(window='3D').mean()
-    df['humidity_ma'] = df['field2'].rolling(window='3D').mean()
+    # Sort the dataframe by date
+    df = df.sort_values('created_at')
+    
+    # Calculate moving averages using a fixed window of 72 periods (assuming 4 readings per hour, this is roughly 3 days)
+    window_size = 72
+    df['temp_ma'] = df['field1'].rolling(window=window_size, min_periods=1).mean()
+    df['humidity_ma'] = df['field2'].rolling(window=window_size, min_periods=1).mean()
     
     return df
+
+# The rest of the code remains the same
 
 def create_plot(df, y_col, ma_col, title, y_label):
     fig = go.Figure()
@@ -31,7 +37,7 @@ def create_plot(df, y_col, ma_col, title, y_label):
     fig.add_trace(go.Scatter(x=df['created_at'], y=df[y_col], mode='lines+markers', name=y_label))
     
     # Add moving average
-    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name=f'3-Day Moving Avg', line=dict(color='red')))
+    fig.add_trace(go.Scatter(x=df['created_at'], y=df[ma_col], mode='lines', name=f'Moving Avg', line=dict(color='red')))
     
     fig.update_layout(
         title=title,
