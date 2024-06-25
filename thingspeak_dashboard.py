@@ -109,7 +109,7 @@ def main():
             'text-align': 'center',
             'background-color': 'lightblue',
             'color': 'black'
-        }))
+        }).hide_index())
 
         # Calculate maximum and minimum temperatures in the last 10 days
         ten_days_ago = datetime.now() - timedelta(days=10)
