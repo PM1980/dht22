@@ -7,6 +7,8 @@ from pytz import UTC  # Import UTC timezone from pytz
 from PIL import Image
 from streamlit_option_menu import option_menu
 
+btn = st.sidebar.button("Some text >")
+
 # Use Streamlit secrets for ThingSpeak credentials
 CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
 READ_API_KEY = st.secrets["thingspeak"]["read_api_key"]
