@@ -85,10 +85,8 @@ def main():
         )
 
     if selected == "Home":
-        st.markdown("""
-        ## Monitoramento da temperatura e umidade 
-        ## do laboratório LabTag/UFPE
-        """) 
+        st.header("Monitoramento da temperatura e umidade")
+        st.header("Laboratório LabTag/UFPE")
 
         df = fetch_data()
 
