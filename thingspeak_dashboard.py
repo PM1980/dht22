@@ -16,6 +16,7 @@ READ_API_KEY = st.secrets["thingspeak"]["read_api_key"]
 # Define the timezone offset
 TZ_OFFSET = timedelta(hours=-3)  # UTC-3
 
+# Function to fetch data from ThingSpeak
 def fetch_data():
     try:
         url = f"https://api.thingspeak.com/channels/{CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=15000"
@@ -43,6 +44,7 @@ def fetch_data():
         st.error(f"An unexpected error occurred: {e}")
         return pd.DataFrame()
 
+# Function to create line plot
 def create_plot(df, y_col, title, y_label, color):
     fig = make_subplots(rows=1, cols=1, subplot_titles=[title])
     
@@ -73,6 +75,7 @@ def create_plot(df, y_col, title, y_label, color):
     
     return fig
 
+# Function to create heatmap
 def create_heatmap(df):
     fig = px.density_heatmap(
         df, 
@@ -86,6 +89,7 @@ def create_heatmap(df):
     fig.update_layout(margin=dict(l=50, r=50, t=50, b=50))
     return fig
 
+# Main function to run the Streamlit app
 def main():
     st.set_page_config(page_title="Enhanced ThingSpeak Dashboard", layout="wide", initial_sidebar_state="expanded")
 
@@ -93,32 +97,44 @@ def main():
     st.markdown("""
         <style>
         .stApp {
-            background-color: #ffffff;
+            background-color: #f0f2f6;
         }
         .stButton>button {
             background-color: #4CAF50;
             color: white;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: bold;
         }
         .stProgress .st-bo {
             background-color: #4CAF50;
         }
+        .stTextInput>div>div>input {
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 16px;
+        }
+        .stDataFrame>div>div>div>div>table {
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 2px rgba(0,0,0,0.1);
+        }
         </style>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
     with st.sidebar:
         img = Image.open("Logo e-Civil.png")
-        st.image(img)
+        st.image(img, width=200)
         
         selected = option_menu(
             menu_title="Main Menu",
             options=["Home", "Analytics", "Setup", "Code", "Contact"],
-            icons=["house", "graph-up", "gear", "code-slash", "envelope"],
-            menu_icon="cast",
+            icons=["🏠", "📈", "🔧", "💻", "📬"],
+            menu_icon="📊",
             default_index=0,
             styles={
                 "container": {"padding": "5!important", "background-color": "#fafafa"},
-                "icon": {"color": "orange", "font-size": "25px"}, 
-                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
+                "icon": {"color": "#FFA500", "font-size": "25px"}, 
+                "nav-link": {"font-size": "18px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
                 "nav-link-selected": {"background-color": "#02ab21"},
             }
         )
@@ -135,14 +151,14 @@ def main():
             with col1:
                 current_temp = df['field1'].iloc[-1]
                 st.metric("Current Temperature", f"{current_temp:.2f} °C", f"{current_temp - df['field1'].iloc[-2]:.2f} °C")
-                fig_temp = create_plot(df, 'field1', '', 'Temperature (°C)', 'red')
-                st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
+                fig_temp = create_plot(df, 'field1', 'Temperature over Time', 'Temperature (°C)', 'red')
+                st.plotly_chart(fig_temp, use_container_width=True)
 
             with col2:
                 current_humidity = df['field2'].iloc[-1]
                 st.metric("Current Humidity", f"{current_humidity:.2f}%", f"{current_humidity - df['field2'].iloc[-2]:.2f}%")
-                fig_humidity = create_plot(df, 'field2', '', 'Humidity (%)', 'blue')
-                st.plotly_chart(fig_humidity, use_container_width=True, config={'displayModeBar': False})
+                fig_humidity = create_plot(df, 'field2', 'Humidity over Time', 'Humidity (%)', 'blue')
+                st.plotly_chart(fig_humidity, use_container_width=True)
 
             # Display first and last timestamps
             col1, col2 = st.columns(2)
@@ -174,11 +190,11 @@ def main():
             # Temperature distribution
             fig_temp_dist = px.histogram(df, x='field1', nbins=30, title='Temperature Distribution', height=400)
             fig_temp_dist.update_layout(margin=dict(l=50, r=50, t=50, b=50))
-            st.plotly_chart(fig_temp_dist, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(fig_temp_dist, use_container_width=True)
 
             # Temperature heatmap
             fig_heatmap = create_heatmap(df)
-            st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(fig_heatmap, use_container_width=True)
 
             # Correlation between temperature and humidity
             fig_scatter = px.scatter(
@@ -190,7 +206,7 @@ def main():
                 height=400
             )
             fig_scatter.update_layout(margin=dict(l=50, r=50, t=50, b=50))
-            st.plotly_chart(fig_scatter, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(fig_scatter, use_container_width=True)
         else:
             st.error("No data available for analytics. Please check your ThingSpeak connection.")
 
@@ -235,40 +251,13 @@ def main():
         contact_form = """
         <form action="https://formsubmit.co/YOUR_EMAIL_HERE" method="POST">
             <input type="hidden" name="_captcha" value="false">
-            <input type="text" name="name" placeholder="Your name" required>
-            <input type="email" name="email" placeholder="Your email" required>
-            <textarea name="message" placeholder="Your message here"></textarea>
-            <button type="submit">Send</button>
+            <input type="text" name="name" placeholder="Your name" required style="border-radius: 8px; padding: 10px 15px; font-size: 16px;">
+            <input type="email" name="email" placeholder="Your email" required style="border-radius: 8px; padding: 10px 15px; font-size: 16px;">
+            <textarea name="message" placeholder="Your message here" style="border-radius: 8px; padding: 10px 15px; font-size: 16px;"></textarea>
+            <button type="submit" style="background-color: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer;">Send</button>
         </form>
         """
         st.markdown(contact_form, unsafe_allow_html=True)
-        
-        # Add custom CSS to make the form look nicer
-        st.markdown("""
-        <style>
-        input[type=text], input[type=email], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            margin-top: 6px;
-            margin-bottom: 16px;
-            resize: vertical;
-        }
-        button[type=submit] {
-            background-color: #4CAF50;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button[type=submit]:hover {
-            background-color: #45a049;
-        }
-        </style>
-        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
