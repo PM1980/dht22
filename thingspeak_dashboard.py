@@ -198,7 +198,7 @@ def main():
         st.title("🔧 Hardware Setup")
         st.subheader("Microcontroller and Sensor Details")
         st.image("setup_esp_dht22.png", use_column_width=True)
-        st.write("This setup uses an ESP8266 microcontroller connected to a DHT22 temperature and humidity sensor.")
+        st.write("This setup uses an ESP32 microcontroller connected to a DHT22 temperature and humidity sensor. Data is sent using Thingspeak.")
 
     elif selected == "Code":
         st.title("💻 Source Code")
