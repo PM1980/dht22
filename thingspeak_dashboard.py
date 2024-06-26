@@ -135,13 +135,13 @@ def main():
             with col1:
                 current_temp = df['field1'].iloc[-1]
                 st.metric("Current Temperature", f"{current_temp:.2f} °C", f"{current_temp - df['field1'].iloc[-2]:.2f} °C")
-                fig_temp = create_plot(df, 'field1', 'Temperature over Time', 'Temperature (°C)', 'red')
+                fig_temp = create_plot(df, 'field1', '', 'Temperature (°C)', 'red')
                 st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
 
             with col2:
                 current_humidity = df['field2'].iloc[-1]
                 st.metric("Current Humidity", f"{current_humidity:.2f}%", f"{current_humidity - df['field2'].iloc[-2]:.2f}%")
-                fig_humidity = create_plot(df, 'field2', 'Humidity over Time', 'Humidity (%)', 'blue')
+                fig_humidity = create_plot(df, 'field2', '', 'Humidity (%)', 'blue')
                 st.plotly_chart(fig_humidity, use_container_width=True, config={'displayModeBar': False})
 
             # Display first and last timestamps
