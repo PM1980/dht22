@@ -62,12 +62,14 @@ def create_plot(df, y_col, title, y_label, color):
         margin=dict(l=50, r=50, t=50, b=50),  # Adjust margins
         xaxis_title='Time (UTC-3)',
         yaxis_title=y_label,
-        font=dict(family="Arial", size=12, color='white'),
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        xaxis=dict(showgrid=True, gridcolor='grey', linecolor='white'),
-        yaxis=dict(showgrid=True, gridcolor='grey', linecolor='white'),
+        font=dict(family="Arial", size=12),
+        plot_bgcolor='white',
+        xaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        yaxis=dict(showgrid=True, gridcolor='lightgrey'),
     )
+    
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
+    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
     
     return fig
 
@@ -81,23 +83,17 @@ def create_heatmap(df):
         color_continuous_scale='Viridis',
         height=400
     )
-    fig.update_layout(
-        margin=dict(l=50, r=50, t=50, b=50),
-        plot_bgcolor='black',
-        paper_bgcolor='black',
-        font=dict(color='white')
-    )
+    fig.update_layout(margin=dict(l=50, r=50, t=50, b=50))
     return fig
 
 def main():
     st.set_page_config(page_title="Enhanced ThingSpeak Dashboard", layout="wide", initial_sidebar_state="expanded")
 
-    # Custom CSS to apply dark theme
+    # Custom CSS to improve the overall look
     st.markdown("""
         <style>
         .stApp {
-            background-color: #1e1e1e;
-            color: white;
+            background-color: #f0f2f6;
         }
         .stButton>button {
             background-color: #4CAF50;
@@ -105,28 +101,6 @@ def main():
         }
         .stProgress .st-bo {
             background-color: #4CAF50;
-        }
-        .css-17eq0hr a {
-            color: white;
-        }
-        .css-1v3fvcr {
-            background-color: #333;
-            color: white;
-        }
-        .css-1v3fvcr a {
-            color: white;
-        }
-        .css-1v3fvcr .css-qbe2hs {
-            color: white;
-        }
-        .css-1v3fvcr .css-qbe2hs a {
-            color: white;
-        }
-        .css-1inwyoe p {
-            color: white;
-        }
-        .css-18ni7ap, .css-16idsys {
-            color: white;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -142,9 +116,9 @@ def main():
             menu_icon="cast",
             default_index=0,
             styles={
-                "container": {"padding": "5!important", "background-color": "#333"},
+                "container": {"padding": "5!important", "background-color": "#fafafa"},
                 "icon": {"color": "orange", "font-size": "25px"}, 
-                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#444"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
                 "nav-link-selected": {"background-color": "#02ab21"},
             }
         )
@@ -161,13 +135,13 @@ def main():
             with col1:
                 current_temp = df['field1'].iloc[-1]
                 st.metric("Current Temperature", f"{current_temp:.2f} °C", f"{current_temp - df['field1'].iloc[-2]:.2f} °C")
-                fig_temp = create_plot(df, 'field1', '', 'Temperature (°C)', 'red')
+                fig_temp = create_plot(df, 'field1', 'Temperature over Time', 'Temperature (°C)', 'red')
                 st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
 
             with col2:
                 current_humidity = df['field2'].iloc[-1]
                 st.metric("Current Humidity", f"{current_humidity:.2f}%", f"{current_humidity - df['field2'].iloc[-2]:.2f}%")
-                fig_humidity = create_plot(df, 'field2', '', 'Humidity (%)', 'blue')
+                fig_humidity = create_plot(df, 'field2', 'Humidity over Time', 'Humidity (%)', 'blue')
                 st.plotly_chart(fig_humidity, use_container_width=True, config={'displayModeBar': False})
 
             # Display first and last timestamps
@@ -199,12 +173,7 @@ def main():
         if not df.empty:
             # Temperature distribution
             fig_temp_dist = px.histogram(df, x='field1', nbins=30, title='Temperature Distribution', height=400)
-            fig_temp_dist.update_layout(
-                margin=dict(l=50, r=50, t=50, b=50),
-                plot_bgcolor='black',
-                paper_bgcolor='black',
-                font=dict(color='white')
-            )
+            fig_temp_dist.update_layout(margin=dict(l=50, r=50, t=50, b=50))
             st.plotly_chart(fig_temp_dist, use_container_width=True, config={'displayModeBar': False})
 
             # Temperature heatmap
@@ -218,15 +187,9 @@ def main():
                 y='field2', 
                 title='Temperature vs Humidity',
                 labels={'field1': 'Temperature (°C)', 'field2': 'Humidity (%)'},
-                trendline='ols',
                 height=400
             )
-            fig_scatter.update_layout(
-                margin=dict(l=50, r=50, t=50, b=50),
-                plot_bgcolor='black',
-                paper_bgcolor='black',
-                font=dict(color='white')
-            )
+            fig_scatter.update_layout(margin=dict(l=50, r=50, t=50, b=50))
             st.plotly_chart(fig_scatter, use_container_width=True, config={'displayModeBar': False})
         else:
             st.error("No data available for analytics. Please check your ThingSpeak connection.")
@@ -292,8 +255,6 @@ def main():
             margin-top: 6px;
             margin-bottom: 16px;
             resize: vertical;
-            background-color: #333;
-            color: white;
         }
         button[type=submit] {
             background-color: #4CAF50;
