@@ -93,7 +93,7 @@ def main():
     st.markdown("""
         <style>
         .stApp {
-            background-color: #f0f2f6;
+            background-color: #ffffff;
         }
         .stButton>button {
             background-color: #4CAF50;
