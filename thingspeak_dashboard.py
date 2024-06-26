@@ -135,7 +135,7 @@ def main():
             with col1:
                 current_temp = df['field1'].iloc[-1]
                 st.metric("Current Temperature", f"{current_temp:.2f} °C", f"{current_temp - df['field1'].iloc[-2]:.2f} °C")
-                fig_temp = create_plot(df, 'field1', 'Temperature over Time', 'Temperature (°C)', 'red')
+                fig_temp = create_plot(df, 'field1', '', 'Temperature (°C)', 'red')
                 st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
 
             with col2:
