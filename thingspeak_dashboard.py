@@ -62,14 +62,12 @@ def create_plot(df, y_col, title, y_label, color):
         margin=dict(l=50, r=50, t=50, b=50),  # Adjust margins
         xaxis_title='Time (UTC-3)',
         yaxis_title=y_label,
-        font=dict(family="Arial", size=12),
-        plot_bgcolor='white',
-        xaxis=dict(showgrid=True, gridcolor='lightgrey'),
-        yaxis=dict(showgrid=True, gridcolor='lightgrey'),
+        font=dict(family="Arial", size=12, color='white'),
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        xaxis=dict(showgrid=True, gridcolor='grey', linecolor='white'),
+        yaxis=dict(showgrid=True, gridcolor='grey', linecolor='white'),
     )
-    
-    fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
-    fig.update_yaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
     
     return fig
 
@@ -83,17 +81,23 @@ def create_heatmap(df):
         color_continuous_scale='Viridis',
         height=400
     )
-    fig.update_layout(margin=dict(l=50, r=50, t=50, b=50))
+    fig.update_layout(
+        margin=dict(l=50, r=50, t=50, b=50),
+        plot_bgcolor='black',
+        paper_bgcolor='black',
+        font=dict(color='white')
+    )
     return fig
 
 def main():
     st.set_page_config(page_title="Enhanced ThingSpeak Dashboard", layout="wide", initial_sidebar_state="expanded")
 
-    # Custom CSS to improve the overall look
+    # Custom CSS to apply dark theme
     st.markdown("""
         <style>
         .stApp {
-            background-color: #f0f2f6;
+            background-color: #1e1e1e;
+            color: white;
         }
         .stButton>button {
             background-color: #4CAF50;
@@ -101,6 +105,22 @@ def main():
         }
         .stProgress .st-bo {
             background-color: #4CAF50;
+        }
+        .css-17eq0hr a {
+            color: white;
+        }
+        .css-1v3fvcr {
+            background-color: #333;
+            color: white;
+        }
+        .css-1v3fvcr a {
+            color: white;
+        }
+        .css-1v3fvcr .css-qbe2hs {
+            color: white;
+        }
+        .css-1v3fvcr .css-qbe2hs a {
+            color: white;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -116,9 +136,9 @@ def main():
             menu_icon="cast",
             default_index=0,
             styles={
-                "container": {"padding": "5!important", "background-color": "#fafafa"},
+                "container": {"padding": "5!important", "background-color": "#333"},
                 "icon": {"color": "orange", "font-size": "25px"}, 
-                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#eee"},
+                "nav-link": {"font-size": "16px", "text-align": "left", "margin":"0px", "--hover-color": "#444"},
                 "nav-link-selected": {"background-color": "#02ab21"},
             }
         )
@@ -173,7 +193,12 @@ def main():
         if not df.empty:
             # Temperature distribution
             fig_temp_dist = px.histogram(df, x='field1', nbins=30, title='Temperature Distribution', height=400)
-            fig_temp_dist.update_layout(margin=dict(l=50, r=50, t=50, b=50))
+            fig_temp_dist.update_layout(
+                margin=dict(l=50, r=50, t=50, b=50),
+                plot_bgcolor='black',
+                paper_bgcolor='black',
+                font=dict(color='white')
+            )
             st.plotly_chart(fig_temp_dist, use_container_width=True, config={'displayModeBar': False})
 
             # Temperature heatmap
@@ -189,7 +214,12 @@ def main():
                 labels={'field1': 'Temperature (°C)', 'field2': 'Humidity (%)'},
                 height=400
             )
-            fig_scatter.update_layout(margin=dict(l=50, r=50, t=50, b=50))
+            fig_scatter.update_layout(
+                margin=dict(l=50, r=50, t=50, b=50),
+                plot_bgcolor='black',
+                paper_bgcolor='black',
+                font=dict(color='white')
+            )
             st.plotly_chart(fig_scatter, use_container_width=True, config={'displayModeBar': False})
         else:
             st.error("No data available for analytics. Please check your ThingSpeak connection.")
@@ -255,6 +285,8 @@ def main():
             margin-top: 6px;
             margin-bottom: 16px;
             resize: vertical;
+            background-color: #333;
+            color: white;
         }
         button[type=submit] {
             background-color: #4CAF50;
