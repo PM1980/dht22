@@ -122,6 +122,12 @@ def main():
         .css-1v3fvcr .css-qbe2hs a {
             color: white;
         }
+        .css-1inwyoe p {
+            color: white;
+        }
+        .css-18ni7ap, .css-16idsys {
+            color: white;
+        }
         </style>
         """, unsafe_allow_html=True)
 
@@ -212,6 +218,7 @@ def main():
                 y='field2', 
                 title='Temperature vs Humidity',
                 labels={'field1': 'Temperature (°C)', 'field2': 'Humidity (%)'},
+                trendline='ols',
                 height=400
             )
             fig_scatter.update_layout(
