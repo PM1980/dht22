@@ -141,7 +141,7 @@ def main():
             with col2:
                 current_humidity = df['field2'].iloc[-1]
                 st.metric("Current Humidity", f"{current_humidity:.2f}%", f"{current_humidity - df['field2'].iloc[-2]:.2f}%")
-                fig_humidity = create_plot(df, 'field2', 'Humidity over Time', 'Humidity (%)', 'blue')
+                fig_humidity = create_plot(df, 'field2', '', 'Humidity (%)', 'blue')
                 st.plotly_chart(fig_humidity, use_container_width=True, config={'displayModeBar': False})
 
             # Display first and last timestamps
