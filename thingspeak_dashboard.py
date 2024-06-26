@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from pytz import UTC
 from PIL import Image
 from streamlit_option_menu import option_menu
+from plotly.subplots import make_subplots
 
 # Use Streamlit secrets for ThingSpeak credentials
 CHANNEL_ID = st.secrets["thingspeak"]["channel_id"]
@@ -43,27 +44,28 @@ def fetch_data():
         return pd.DataFrame()
 
 def create_plot(df, y_col, title, y_label, color):
-    fig = go.Figure()
+    fig = make_subplots(rows=1, cols=1, subplot_titles=[title])
     
-    # Add main data
-    fig.add_trace(go.Scatter(
-        x=df['created_at'], y=df[y_col], 
-        mode='lines', 
-        name=y_label, 
-        line=dict(color=color, width=2),
-        fill='tozeroy'
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=df['created_at'], 
+            y=df[y_col], 
+            mode='lines', 
+            name=y_label, 
+            line=dict(color=color, width=2),
+            fill='tozeroy'
+        )
+    )
     
     fig.update_layout(
-        title=title,
+        height=400,  # Set a fixed height
+        margin=dict(l=50, r=50, t=50, b=50),  # Adjust margins
         xaxis_title='Time (UTC-3)',
         yaxis_title=y_label,
-        legend_title='Legend',
         font=dict(family="Arial", size=12),
         plot_bgcolor='white',
         xaxis=dict(showgrid=True, gridcolor='lightgrey'),
         yaxis=dict(showgrid=True, gridcolor='lightgrey'),
-        xaxis_rangeslider_visible=True
     )
     
     fig.update_xaxes(showline=True, linewidth=2, linecolor='black', mirror=True)
@@ -72,11 +74,16 @@ def create_plot(df, y_col, title, y_label, color):
     return fig
 
 def create_heatmap(df):
-    # Create a heatmap of temperature over time
-    fig = px.density_heatmap(df, x='created_at', y='field1', 
-                             title='Temperature Heatmap',
-                             labels={'created_at': 'Time', 'field1': 'Temperature (°C)'},
-                             color_continuous_scale='Viridis')
+    fig = px.density_heatmap(
+        df, 
+        x='created_at', 
+        y='field1', 
+        title='Temperature Heatmap',
+        labels={'created_at': 'Time', 'field1': 'Temperature (°C)'},
+        color_continuous_scale='Viridis',
+        height=400
+    )
+    fig.update_layout(margin=dict(l=50, r=50, t=50, b=50))
     return fig
 
 def main():
@@ -129,13 +136,13 @@ def main():
                 current_temp = df['field1'].iloc[-1]
                 st.metric("Current Temperature", f"{current_temp:.2f} °C", f"{current_temp - df['field1'].iloc[-2]:.2f} °C")
                 fig_temp = create_plot(df, 'field1', 'Temperature over Time', 'Temperature (°C)', 'red')
-                st.plotly_chart(fig_temp, use_container_width=True)
+                st.plotly_chart(fig_temp, use_container_width=True, config={'displayModeBar': False})
 
             with col2:
                 current_humidity = df['field2'].iloc[-1]
                 st.metric("Current Humidity", f"{current_humidity:.2f}%", f"{current_humidity - df['field2'].iloc[-2]:.2f}%")
                 fig_humidity = create_plot(df, 'field2', 'Humidity over Time', 'Humidity (%)', 'blue')
-                st.plotly_chart(fig_humidity, use_container_width=True)
+                st.plotly_chart(fig_humidity, use_container_width=True, config={'displayModeBar': False})
 
             # Display first and last timestamps
             col1, col2 = st.columns(2)
@@ -165,17 +172,25 @@ def main():
 
         if not df.empty:
             # Temperature distribution
-            fig_temp_dist = px.histogram(df, x='field1', nbins=30, title='Temperature Distribution')
-            st.plotly_chart(fig_temp_dist, use_container_width=True)
+            fig_temp_dist = px.histogram(df, x='field1', nbins=30, title='Temperature Distribution', height=400)
+            fig_temp_dist.update_layout(margin=dict(l=50, r=50, t=50, b=50))
+            st.plotly_chart(fig_temp_dist, use_container_width=True, config={'displayModeBar': False})
 
             # Temperature heatmap
             fig_heatmap = create_heatmap(df)
-            st.plotly_chart(fig_heatmap, use_container_width=True)
+            st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
 
             # Correlation between temperature and humidity
-            fig_scatter = px.scatter(df, x='field1', y='field2', title='Temperature vs Humidity',
-                                     labels={'field1': 'Temperature (°C)', 'field2': 'Humidity (%)'})
-            st.plotly_chart(fig_scatter, use_container_width=True)
+            fig_scatter = px.scatter(
+                df, 
+                x='field1', 
+                y='field2', 
+                title='Temperature vs Humidity',
+                labels={'field1': 'Temperature (°C)', 'field2': 'Humidity (%)'},
+                height=400
+            )
+            fig_scatter.update_layout(margin=dict(l=50, r=50, t=50, b=50))
+            st.plotly_chart(fig_scatter, use_container_width=True, config={'displayModeBar': False})
         else:
             st.error("No data available for analytics. Please check your ThingSpeak connection.")
 
